@@ -1,0 +1,120 @@
+<html>
+<head>
+    <style type="text/css">
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+<input id="angle" type="text" placeholder="Enter angle">
+<input id="steps" type="text" placeholder="Enter step rate">
+<input type="button" value="Start" onclick="startClick();">
+<input type="button" value="Stop" onclick="stopClick();">
+<input type="button" value="Next" onclick="nextClick();">
+<input type="button" value="Reset" onclick="resetClick();">
+<p/>
+<canvas id="canvas" width="600" height="600"></canvas>
+<script>
+    function nextColor(c, amt) {
+        if (c.up) {
+            c.val += amt;
+            if (c.val > 255) {
+                c.val = 255;
+                c.up = false;
+            }
+        } else {
+            c.val -= amt;
+            if (c.val < 0) {
+                c.val = 0;
+                c.up = true;
+            }
+        }
+    }
+
+    var canvas = document.getElementById('canvas');
+    var txtAngle = document.getElementById('angle');
+    var txtStepRate = document.getElementById('steps');
+    var ctx = canvas.getContext('2d');
+
+    var nextFunction;
+    var intervalId;
+
+    ctx.save();
+
+    function startClick() {
+        if (intervalId) {
+            return;
+        }
+
+        clearAndDefineFunctionIfNeeded();
+        intervalId = setInterval(nextFunction, 10);
+    }
+
+    function stopClick() {
+        stopIfRunning();
+    }
+
+    function nextClick() {
+        clearAndDefineFunctionIfNeeded();
+        nextFunction();
+    }
+
+    function resetClick() {
+        stopIfRunning();
+        clearCanvas();
+        nextFunction = null;
+    }
+
+    // -----
+
+    function stopIfRunning() {
+        if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+        }
+    }
+
+    function clearAndDefineFunctionIfNeeded() {
+        if (!nextFunction) {
+            clearCanvas();
+            defineNextFunction();
+        }
+    }
+
+    function clearCanvas() {
+        ctx.restore();
+        ctx.save();
+        ctx.clearRect(0, 0, 600, 600);
+    }
+
+    function defineNextFunction() {
+        var r = {val: 0, up: true};
+        var g = {val: 0, up: true};
+        var b = {val: 0, up: true};
+
+        var stepIncrease = parseFloat(txtStepRate.value);
+        var angleDegrees = parseFloat(txtAngle.value);
+        var angleRadians = 2 * Math.PI * (angleDegrees / 360.0);
+        var steps = stepIncrease;
+
+        ctx.translate(300, 300);
+
+        nextFunction = function() {
+            ctx.strokeStyle = 'rgb(' + r.val + ', ' + g.val + ', ' + b.val + ')';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(steps, 0);
+            ctx.stroke();
+            ctx.translate(steps, 0);
+            ctx.rotate(angleRadians);
+            steps += stepIncrease;
+            nextColor(r, 1);
+            nextColor(g, 2);
+            nextColor(b, 3);
+        };
+    }
+</script>
+</body>
+</html>

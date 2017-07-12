@@ -1,0 +1,36 @@
+<html>
+<head>
+    <style type="text/css">
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas" width="600" height="600"></canvas>
+<script>
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+
+    var steps = 0;
+    var stepIncrease = 4;
+    var angleDegrees = 241.0;
+    var angleRadians = 2 * Math.PI * (angleDegrees / 360.0);
+
+    ctx.translate(300, 300);
+
+    function nextFrame() {
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(steps, 0);
+        ctx.stroke();
+        ctx.translate(steps, 0);
+        ctx.rotate(angleRadians);
+        steps += stepIncrease;
+    }
+
+    setInterval(nextFrame, 10);
+</script>
+</body>
+</html>
